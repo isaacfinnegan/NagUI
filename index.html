@@ -373,6 +373,12 @@ Ext.onReady(function(){
 										fn: function(){
 											return false;
 										}
+									},
+									'mouseleave':{
+										element: 'el',
+										fn: function(){
+											Ext.getCmp('nagiosdetaildata').collapse();
+										}
 									}
 								}							
 							}
