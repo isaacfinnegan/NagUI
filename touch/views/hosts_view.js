@@ -26,11 +26,11 @@ nagios.views.hostlist=Ext.extend(Ext.List,{
 	itemTpl: new Ext.XTemplate(
 		'<div class="nagiosgradient-{state} x-list-margin-item">',
 		'{label}',
-		'<img src="/extjs/resources/images/default/s.gif" class="ack-{acknowledged}" unselectable="on">',
-		'<img src="/extjs/resources/images/default/s.gif" class="comment-{[values.comments_with_info.length]}" unselectable="on">',
-		'<img src="/extjs/resources/images/default/s.gif" class="ndisabled-{notifications_enabled}" unselectable="on">',
-		'<img src="/extjs/resources/images/default/s.gif" class="{notification_period}" unselectable="on">',
-		'<img src="/extjs/resources/images/default/s.gif" class="schedule-{scheduled_downtime_depth}" unselectable="on">',
+		'<img src="../extjs/resources/images/default/s.gif" class="ack-{acknowledged}" unselectable="on">',
+		'<img src="../extjs/resources/images/default/s.gif" class="comment-{[values.comments_with_info.length]}" unselectable="on">',
+		'<img src="../extjs/resources/images/default/s.gif" class="ndisabled-{notifications_enabled}" unselectable="on">',
+		'<img src="../extjs/resources/images/default/s.gif" class="{notification_period}" unselectable="on">',
+		'<img src="../extjs/resources/images/default/s.gif" class="schedule-{scheduled_downtime_depth}" unselectable="on">',
 		
 		'<div class="hostgroup-status ">',
 		'Services Crit: <span class=nagios-2>{num_services_crit}</span> ',
