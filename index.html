@@ -538,7 +538,6 @@ Ext.onReady(function(){
 				nodetext: 'name',
 				query: 'unhandledhostproblems'
 			}
-
 		},
 		{
 			text:'Unhandled Svc Problems',
@@ -551,7 +550,6 @@ Ext.onReady(function(){
 				nodetext: 'hostsvc',
 				query: 'unhandledsvcproblems'
 			}
-
 		},
 		{
 			text:'Acknowledged',
@@ -564,7 +562,30 @@ Ext.onReady(function(){
 				status: 'plugin_output',
 				query: 'ackedproblems'
 			}
-
+		},
+		{
+			text:'Comments',
+			meta: 1,
+			expanded:false,
+			iconCls:'x-tree-comment',
+			parms:{
+				groupby:'',
+				nodetext: 'author',
+				status: 'comment',
+				query: 'comments'
+			}
+		},
+		{
+			text:'Downtimes',
+			meta: 1,
+			expanded:false,
+			iconCls:'x-tree-downtime',
+			parms:{
+				groupby:'',
+				nodetext: 'author',
+				status: 'comment',
+				query: 'downtimes'
+			}
 		}
 	]);
 		

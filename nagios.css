@@ -259,7 +259,7 @@ limitations under the License.
 		.x-tree-notify{
 			background-image:url(/nagui/images/notify.gif) !important;
 		}
-		.x-tree-schedule{
+		.x-tree-schedule, .x-tree-downtime, .schedule, .downtime{
 			background-image:url(/nagui/images/downtime.gif) !important;
 		}
 		.x-nagios-statuspanel{

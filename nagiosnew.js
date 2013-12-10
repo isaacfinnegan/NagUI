@@ -505,6 +505,10 @@ function replaceURLWithHTMLLinks(text) {
 }
 function updateNagiosInfoPanel(view,node)
 {
+	if(node.data.nagios_type=='comment' || node.data.nagios_type=='downtime')
+	{
+		return;
+	}
 	var nagiosdetail=Ext.getCmp('nagiosdetail');
 	setNagiosInfo(node,nagiosdetail);
 	nagiosdetail.node=node;
