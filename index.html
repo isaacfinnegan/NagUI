@@ -94,6 +94,7 @@ else {
 <script type="text/javascript" src="lib/SavedViews.js"></script>
 <script type="text/javascript" src="lib/NagiosActions.js"></script>
 <script type="text/javascript" src="lib/NagiosLogGrid.js"></script>
+<script type="text/javascript" src="lib/Livelog.js"></script>
 <script type="text/javascript" src="custom.js"></script>
 <script>
 
@@ -329,6 +330,7 @@ Ext.onReady(function(){
 				region:'south',
 				layout:'border',
 				split:true,
+				id: 'app_southregion',
 				activeItem:0,
 				// frame:true,
 				// baseCls:'x-nagios-statuspanel',
@@ -376,69 +378,6 @@ Ext.onReady(function(){
 							}
 						]
 
-					},
-					{
-						title: 'Live Log',
-						xtype: 'nagiosloggrid',
-						tbar:undefined,
-						id: 'livelog',
-						features: [{
-						    ftype: 'filters',
-						    // encode and local configuration options defined previously for easier reuse
-						    encode: 'encode', // json encode the filter query
-						    local: 'local',   // defaults to false (remote filtering)
-
-						    // Filters are most naturally placed in the column definition, but can also be
-						    // added here.
-						    filters: [{
-						        type: 'boolean',
-						        dataIndex: 'visible'
-						    }]
-						}],
-						viewConfig:{
-							loadMask:false
-						},
-						columns:[
-							{ text: 'Time', dataIndex: 'time',width: 130, renderer: nagiosDateRender },
-							{ text: 'State', dataIndex: 'state', width: 60, renderer: nagiosStateRender,filterable:true },
-							{ text: 'State Type', dataIndex: 'state_type', width: 80,hidden: true,filterable:true},
-							{ text: 'Type', dataIndex: 'type', width: 160,hidden: true,filterable:true},
-							{ text: 'Mesg', dataIndex: 'message', hidden:false, flex:2},
-							{ text: 'Host', dataIndex: 'host_name',hidden:false,filterable:true},
-							{ text: 'LineNo', dataIndex: 'lineno',hidden:true},
-							{ text: 'Options', dataIndex: 'options',hidden:true},
-							{ text: 'Service', dataIndex: 'service_description', hidden:false,filterable:true},
-							{ text: 'Contact', dataIndex: 'contact_name', hidden:true,filterable:true},
-							{ text: 'Output', dataIndex: 'plugin_output', hidden:true},
-							{ text: 'Attempt', dataIndex: 'attempt', hidden:true},
-							{ text: 'Log Class', dataIndex: 'class', hidden:false, renderer:nagiosLogClassRender,filterable:true},
-							{ text: 'Command', dataIndex: 'command_name',hidden:true}			
-						],
-						dockedItems:[
-						{
-							xtype: 'toolbar',
-							dock: 'left',
-							vertical: true,
-							items:[
-								{
-									xtype:'button',
-									tooltip: 'start/pause displaying log entries as they are recieved from the nagios servers',
-									icon: 'images/play.gif',
-									handler: function(){
-										if(this.icon=='images/play.gif')
-										{
-											this.setIcon('images/pause.gif');
-										}
-										else
-										{
-											this.setIcon('images/play.gif');
-										}
-										NagUI.toggleLiveLog(Ext.getCmp('livelog'));
-									}
-								}
-							]
-						}
-						]
 					}
 				]
 			},	
@@ -583,6 +522,10 @@ Ext.onReady(function(){
 			}
 		]
 	});
+	if(NagUI.config.livelog.enabled)
+	{
+		Ext.getCmp('app_southregion').add(new NagUI.Livelog({initialHistory: NagUI.config.livelog.initial_history}));	
+	}
 	nag_tree.store.getRootNode().appendChild([
 		{
 			text:'Unhandled Host Problems',
