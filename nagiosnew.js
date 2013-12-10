@@ -442,6 +442,7 @@ function addCustomView(name){
 	}
 	var newcustomview= views.add(new NagUI.NagiosTree({
 		title: name,
+		stateful:false,
 		stateId: name.replace(' ','-'),
 		allowDrop:true,
 		rootVisible:true,
