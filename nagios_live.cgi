@@ -452,6 +452,10 @@ if($query=~/^GET/)
 					$_->{'status'}= 'Total: ' . $_->{'state > 0'} ;
 					print STDERR "DEBUG" . make_json($_) if $DEBUG;
 				}
+				elsif($q->param('status') eq 'comment')
+				{
+					$_->{'status'}= $_->{'comment'};					
+				}
 				else
 				{
 					$_->{'status'}=$_->{'plugin_output'};					

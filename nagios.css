@@ -250,7 +250,7 @@ limitations under the License.
 		.x-tree-ack{
 			background-image:url(/nagui/images/ack.gif) !important;
 		}
-		.x-tree-comment{
+		.x-tree-comment, .comment{
 			background-image:url(/nagui/images/comment.gif) !important;
 		}
 		.x-tree-ndisabled{
