@@ -154,6 +154,10 @@ Ext.onReady(function(){
 		id: 'peer_name'
 	});	
 		
+	window.saved_views= new NagUI.SavedViews({
+		title: 'Saved Views',
+		id: 'saved_views'
+	});	
 	window.nag_tree=Ext.create('NagUI.NagiosTree',{
 		statefulNodes:false,
 		stateful: true,
@@ -518,12 +522,7 @@ Ext.onReady(function(){
 				split: true,
 				items:[
 					nag_tree,
-					new NagUI.SavedViews({
-						title: 'Saved Views',
-						id: 'saved_views'
-					})
-// SAVED VIEWS.  should this be another class? probably
-		
+					saved_views
 				]	
 			}
 		]
