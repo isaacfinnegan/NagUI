@@ -507,6 +507,7 @@ limitations under the License.
                      if (typeof callback == 'function') {
                          callback();
                      }
+                     savedViews.resumeEvents();
                  },
                  failure: function(r, o) {
                      Ext.notify.msg('Error', 'There was an error restoring the user saved views');
