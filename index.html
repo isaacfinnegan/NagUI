@@ -158,6 +158,13 @@ Ext.onReady(function(){
 		title: 'Saved Views',
 		id: 'saved_views'
 	});	
+	window.nagiosdetail=new Ext.panel.Panel({
+		xtype:'panel',
+		region:'center',
+		id:'nagiosdetail',
+		bodyStyle:'background:  #D0DEF0;padding:3px',
+		autoScroll:true				
+	});
 	window.nag_tree=Ext.create('NagUI.NagiosTree',{
 		statefulNodes:false,
 		stateful: true,
@@ -348,13 +355,7 @@ Ext.onReady(function(){
 						xtype:'panel',
 						layout: 'border',
 						items:[
-							{
-								xtype:'panel',
-								region:'center',
-								id:'nagiosdetail',
-								bodyStyle:'background:  #D0DEF0;padding:3px',
-								autoScroll:true				
-							},
+							nagiosdetail,
 							{
 								title: 'Properties',
 								xtype: 'propertygrid',
@@ -633,29 +634,36 @@ Ext.onReady(function(){
 		}
 	]);
 
+	// initialize recurring status updater in the middle of the top toolbar
 	nagiosStatus();
 	
-	// Restore states
-	// var nag_tree_state=Ext.state.Manager.get('nagios_views');
-	// if(nag_tree_state)
-	// {
-	// 	nag_tree.applyState(nag_tree_state);
-	// }
-	window.nagiosdetail=Ext.getCmp('nagiosdetail');
+	// restore nagios_views state in callback of saved_views restoral (restoreCustomViews)  
+	//needs saved_views loaded to restore custom views that were left open
 	var nagios_views_state=Ext.state.Manager.get('nagios_views');
-	if(nagios_views_state && nagios_views_state.customviews)
-	{
-		Ext.getCmp('nagios_views').applyState(nagios_views_state);
-		// for(var i=0;i<nagios_views_state.customviews;i++)
-		// {
-		// 	var newview=addCustomView();
-		// 	var newviewstate=Ext.state.Manager.get(newview.id);
-		// 	if(newviewstate)
-		// 	{
-		// 		newview.applyState(newviewstate);										
-		// 	}
-		// }
-	}							
+	restoreCustomViews(function(){
+		if(nagios_views_state && nagios_views_state.customviews)
+		{
+			if(nagios_views_state.customviews)
+			{
+				for(var i=0;i<nagios_views_state.customviews.length;i++)
+				{
+					if(Ext.getCmp('saved_views') && Ext.getCmp('saved_views').getRootNode())
+					{
+						var lookup_node=Ext.getCmp('saved_views').getRootNode().findChild('text',nagios_views_state.customviews[i],true);
+						if(lookup_node)
+						{
+							var state_lookup=lookup_node.data.viewstate;
+							if(state_lookup)
+							{
+								var newview=addCustomView(nagios_views_state.customviews[i]);
+								newview.applyState(state_lookup,true);
+							}							
+						}
+					}
+				}
+			}	
+		}
+	});
 	Ext.tip.QuickTipManager.init();
 	Ext.tip.QuickTipManager.register({
 		target: 'statusbox',
@@ -718,7 +726,6 @@ Ext.onReady(function(){
 	// Hack to recalculate the property grid
 	// Ext.getCmp('nagiosdetaildata').getEl().setHeight(1800)
 
-	restoreCustomViews();
 
 });
 
