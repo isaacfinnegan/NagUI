@@ -385,12 +385,13 @@ limitations under the License.
  }
 
 
- function addCustomView(name) {
+ function addCustomView(name, config) {
      var views = Ext.getCmp('nagios_views');
      if (typeof name != 'string') {
          name = 'View ' + views.items.getCount();
      }
-     var newcustomview = views.add(new NagUI.NagiosTree({
+
+     var newNagiosTreeConfig = {
          title: name,
          stateful: false,
          stateId: name.replace(' ', '-'),
@@ -442,7 +443,11 @@ limitations under the License.
              customHostFilters: ['Filter: name != dummy-host-all-services'],
              customServiceFilters: ['Filter: host_name !~ dummy-host-all-services']
          })
-     }));
+     };
+     if (config) {
+         Ext.apply(newNagiosTreeConfig, config);
+     }
+     var newcustomview = views.add(new NagUI.NagiosTree(newNagiosTreeConfig));
      views.setActiveTab(newcustomview);
      newcustomview.store.getRootNode().loaded = true;
      NagUI.log(newcustomview);
