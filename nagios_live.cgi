@@ -189,7 +189,7 @@ if ( $q->url_param('state') ) {
     {
         $view = $ENV{REMOTE_USER};
     }
-    print STDERR "handling state for $view " . $ENV{'REQUEST_METHOD'} . "\n";
+    print STDERR "handling " . $ENV{'REQUEST_METHOD'} . " state for $view \n";
 
     # get existing state
     my $state=&getStateFromFile($view);
