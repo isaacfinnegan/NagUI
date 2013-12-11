@@ -156,64 +156,67 @@ if ( $q->url_param('getuser') ) {
 
 }
 
-# HANDLING FOR STATE FILE FETCHES
-if ( $q->url_param('state') ) {
-
-    print STDERR "handling state for " . $ENV{'REQUEST_METHOD'} . "\n";
-
+# READ STATE DATA FROM FILE
+sub getStateFromFile()
+{
+    my $view=shift;
     # try to open the state as defined in the config
-    open( STATE, $config->{'statefile'} );
-    flock( STATE, LOCK_SH );
-    my (@statefile) = <STATE>;
+    open( my $STATEFILE, '<' , $config->{'statefile_dir'} . '/' . $view );
+    flock( $STATEFILE, LOCK_SH );
+    my (@statefile_data) = <$STATEFILE>;
     my $state;
 
     # if there is a file with content, parse it into the state hash
-    if ( scalar(@statefile) ) {
-        $state = eat_json( join( "\n", @statefile ) )
+    if ( scalar(@statefile_data) ) {
+        $state = eat_json( join( "\n", @statefile_data ) )
             || die "Error parsing state file $!\n";
     }
     else {
-        $state = { default_views => [] };
+        $state =[];
     }
-    close(STATE);
+    close($STATEFILE);
+
+    return $state;
+
+}
+
+# HANDLING FOR STATE FILE FETCHES
+if ( $q->url_param('state') ) {
+
+    # view will be user or 'shared'
+    my $view=$q->url_param('state');
+    if($view ne 'shared')
+    {
+        $view = $ENV{REMOTE_USER};
+    }
+    print STDERR "handling state for $view " . $ENV{'REQUEST_METHOD'} . "\n";
+
+    # get existing state
+    my $state=&getStateFromFile($view);
 
     # handle GETS on the state
     if ( $ENV{'REQUEST_METHOD'} eq 'GET' ) {
-        if ( $q->url_param('state') eq 'default' ) {
-            my $default_views
-                = ( $state && defined( $state->{'default_views'} )
-                ? $state->{'default_views'}
-                : [] );
-            print $q->header('application/json');
-            print &make_json( $default_views, { allow_nonref => 1 } );
-        }
-        else {
-            my $user_views
-                = ( $state && defined( $state->{ $user . '_views' } )
-                ? $state->{ $user . '_views' }
-                : [] );
-            print $q->header('application/json');
-            print &make_json( $user_views, { allow_nonref => 1 } );
-        }
+        print $q->header('application/json');
+        print &make_json( $state, { allow_nonref => 1 } );
     }
 
     # handle PUTS (updates) to the state
     if ( $ENV{'REQUEST_METHOD'} eq 'POST' ) {
-        print STDERR "saving state\n";
-        my $update
-            = &eat_json( $q->param('POSTDATA'), { allow_nonref => 1 } );
-        if ( $q->url_param('state') eq 'default' ) {
-            $state->{'default_views'} = $update;
-        }
-        else {
-            $state->{ $user . '_views' } = $update;
-        }
-        open( STATE, '>' . $config->{'statefile'} );
-        flock( STATE, LOCK_EX );
-        print $q->header('application/json');
-        print STATE &make_json( $state, { allow_nonref => 1, pretty => 1 } );
-        close STATE;
 
+        print STDERR "saving handling state for $view \n";
+        my $update = &eat_json( $q->param('POSTDATA'), { allow_nonref => 1 } );
+        $state = $update if defined $update;
+        # write to temp file
+        open( my $NEWSTATEFILE, '>', $config->{'statefile_dir'} . '/' . $view . '.tmp.' . $$ );
+        unless(flock( $NEWSTATEFILE, LOCK_EX ))
+        {
+            die "can't get write lock on ". $config->{'statefile_dir'} . '/' . $view . '.tmp.' . $$;
+        }
+        print $q->header('application/json');
+        print $NEWSTATEFILE &make_json( $state, { allow_nonref => 1, pretty => 1 } );
+        close $NEWSTATEFILE;
+        # rename temp file
+        rename($config->{'statefile_dir'} . '/' . "$view.tmp.$$", $config->{'statefile_dir'} . '/' . $view);
         # flock(STATE, LOCK_UN)
     }
 

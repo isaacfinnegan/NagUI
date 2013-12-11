@@ -474,7 +474,7 @@ limitations under the License.
      savedViews.suspendEvents();
      //step 1: get shared views and restore
      Ext.Ajax.request({
-         url: NagUI.url + '?state=default',
+         url: NagUI.url + '?state=shared',
          method: 'GET',
          success: function(r, o) {
              var views = (r.responseText.length > 1 ? Ext.decode(r.responseText) : []);
@@ -489,7 +489,7 @@ limitations under the License.
 
              // step 2: get user saved views and restore
              Ext.Ajax.request({
-                 url: NagUI.url + '?state=' + NagUI.username + '_views',
+                 url: NagUI.url + '?state=' + NagUI.username,
                  method: 'GET',
                  success: function(r, o) {
                      var views = (r.responseText.length > 1 ? Ext.decode(r.responseText) : []);
@@ -515,7 +515,7 @@ limitations under the License.
              });
          },
          failure: function(r, o) {
-             Ext.notify.msg('Error', 'There was an error restoring the default saved views');
+             Ext.notify.msg('Error', 'There was an error restoring the shared saved views');
          }
      });
      Ext.defer(restoreCustomViews, 15000);
