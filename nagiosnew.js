@@ -465,10 +465,14 @@ limitations under the License.
 
  // function specially for Saved_Views instance in app. restores the custom views by retrieving views
  // stored on nagios_live and then setting up a deferred call to itself to run in/every 15 sec
+
+ // there are 2 ajax calls here one for the shared views and one for the user views. the user view
+ // is chained to the shared view ajax call
  function restoreCustomViews(callback) {
 
      var savedViews = Ext.getCmp('saved_views');
      savedViews.suspendEvents();
+     //step 1: get shared views and restore
      Ext.Ajax.request({
          url: NagUI.url + '?state=default',
          method: 'GET',
@@ -482,34 +486,37 @@ limitations under the License.
                      leaf: true
                  });
              });
-             Ext.defer(savedViews.resumeEvents, 1500, savedViews);
+
+             // step 2: get user saved views and restore
+             Ext.Ajax.request({
+                 url: NagUI.url + '?state=' + NagUI.username + '_views',
+                 method: 'GET',
+                 success: function(r, o) {
+                     var views = (r.responseText.length > 1 ? Ext.decode(r.responseText) : []);
+                     savedViews.getRootNode().childNodes[1].removeAll();
+                     Ext.each(views, function(i) {
+                         savedViews.getRootNode().childNodes[1].appendChild({
+                             text: i.text,
+                             viewstate: i.viewstate,
+                             leaf: true
+                         });
+                     });
+
+                     // if there's a callback: restoring nagios_views that need
+                     // to reference these shared views
+                     if (typeof callback == 'function') {
+                         callback();
+                     }
+                 },
+                 failure: function(r, o) {
+                     Ext.notify.msg('Error', 'There was an error restoring the user saved views');
+                 }
+             });
          },
          failure: function(r, o) {
              Ext.notify.msg('Error', 'There was an error restoring the default saved views');
          }
      });
-     Ext.Ajax.request({
-         url: NagUI.url + '?state=' + NagUI.username + '_views',
-         method: 'GET',
-         success: function(r, o) {
-             var views = (r.responseText.length > 1 ? Ext.decode(r.responseText) : []);
-             savedViews.getRootNode().childNodes[1].removeAll();
-             Ext.each(views, function(i) {
-                 savedViews.getRootNode().childNodes[1].appendChild({
-                     text: i.text,
-                     viewstate: i.viewstate,
-                     leaf: true
-                 });
-             });
-             Ext.defer(savedViews.resumeEvents, 1500, savedViews);
-         },
-         failure: function(r, o) {
-             Ext.notify.msg('Error', 'There was an error restoring the user saved views');
-         }
-     });
-     if (typeof callback == 'function') {
-         Ext.defer(callback, 750);
-     }
      Ext.defer(restoreCustomViews, 15000);
  }
 
