@@ -83,6 +83,11 @@ else {
     onError.call(this, "Failed loading config via XHR: '" + url + "'; " +
                        "XHR status code: " + status);
 }
+	if(NagUI.config.graphite.enable)
+	{
+		console.log('loading custom extension for Graphite')
+		Ext.Loader.loadScript("integrationlibs/GraphitePanel.js");
+	}
 
 </script>
 <script type="text/javascript" src="lib/Nagios.js"></script>
@@ -217,6 +222,7 @@ Ext.onReady(function(){
 			{
 				text:'Actions',
 				menu:{
+					id: 'nag_tree_actions',
 					items:[
 						{
 							text: 'New Custom View',
@@ -671,6 +677,39 @@ Ext.onReady(function(){
 	});
 	// Post app setup, do things that need all the components done.
 	
+	if(NagUI.config.graphite.enable)
+	{
+		NodeContextMenu.add({
+		    xtype: 'menuitem',
+		    text: 'Graphite Metrics',
+		    handler: function(i) {
+		        var node = i.parentMenu.contextNode;
+		        NagUI.graphiteWindow(node);
+		    }
+		});
+		Ext.getCmp('nag_tree_actions').add({
+		    xtype: 'menuitem',
+		    text: 'Graphite Metrics',
+		    handler: function() {
+				var nodes=nag_tree.getChecked();
+				if(nodes.length>0)
+				{
+					NagUI.graphiteWindow(nodes);
+				}
+		    }
+		});
+		Ext.getCmp('nagios_views').getDockedItems('toolbar[dock="top"]')[0].down('[text="Actions"]').menu.add({
+		    xtype: 'menuitem',
+		    text: 'Graphite Metrics',
+		    handler: function() {
+                var nodes = Ext.getCmp('nagios_views').getActiveTab().getChecked();
+				if(nodes.length>0)
+				{
+					NagUI.graphiteWindow(nodes);
+				}
+		    }
+		});	}
+
 	// execute for search in url
 	
 	if(typeof window.location.search!=undefined && window.location.search.length)
