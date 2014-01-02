@@ -12,6 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Configuration Options:
+//         "enable":true,
+//         "metricsPrefix":"*",
+//         "defaultMetric":"cpu-avg.cpu-user.value",
+//         "metricsPath":"/metrics/",
+//         "path":"/render/"
+
+
+
 if (typeof Graphite == 'undefined') {
     Ext.namespace('Graphite');
     Graphite.log = function(log) {
