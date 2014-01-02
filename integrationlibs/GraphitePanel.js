@@ -19,9 +19,6 @@ if (typeof Graphite == 'undefined') {
             console.log(log);
         }
     }
-    Date.prototype.format = function(f) {
-        return Ext.util.Format.date(this, f);
-    }
 }
 
 
@@ -51,7 +48,7 @@ Graphite.graphiteWindow = function(n) {
     g.load(hostnamelist.join(','));
 
 }
-Ext.defint('Graphite.TemplateStore', {
+Ext.define('Graphite.TemplateStore', {
     extend: 'Ext.data.TreeStore',
     alias: 'store.graphite'
 });

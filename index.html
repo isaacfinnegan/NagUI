@@ -87,6 +87,14 @@ else {
 	{
 		console.log('loading custom extension for Graphite')
 		Ext.Loader.loadScript("integrationlibs/GraphitePanel.js");
+		if (typeof Graphite == 'undefined') {
+	    Ext.namespace('Graphite');
+		    Graphite.log = function(log) {
+		        if (window.console) {
+		            console.log(log);
+		        }
+		    }
+		}
 		Graphite.config=NagUI.config.graphite;
 	}
 
@@ -678,14 +686,14 @@ Ext.onReady(function(){
 	});
 	// Post app setup, do things that need all the components done.
 	
-	if(NagUI.config.graphite.enable)
+	if(NagUI.config.graphite && Graphite.config.enable)
 	{
 		NodeContextMenu.add({
 		    xtype: 'menuitem',
 		    text: 'Graphite Metrics',
 		    handler: function(i) {
 		        var node = i.parentMenu.contextNode;
-		        NagUI.graphiteWindow(node);
+		        Graphite.graphiteWindow(node);
 		    }
 		});
 		Ext.getCmp('nag_tree_actions').add({
@@ -695,7 +703,7 @@ Ext.onReady(function(){
 				var nodes=nag_tree.getChecked();
 				if(nodes.length>0)
 				{
-					NagUI.graphiteWindow(nodes);
+					Graphite.graphiteWindow(nodes);
 				}
 		    }
 		});
@@ -706,7 +714,7 @@ Ext.onReady(function(){
                 var nodes = Ext.getCmp('nagios_views').getActiveTab().getChecked();
 				if(nodes.length>0)
 				{
-					NagUI.graphiteWindow(nodes);
+					Graphite.graphiteWindow(nodes);
 				}
 		    }
 		});	}
