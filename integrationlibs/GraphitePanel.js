@@ -12,8 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+if (typeof Graphite == 'undefined') {
+    Ext.namespace('Graphite');
+    Graphite.log = function(log) {
+        if (window.console) {
+            console.log(log);
+        }
+    }
+    Date.prototype.format = function(f) {
+        return Ext.util.Format.date(this, f);
+    }
+}
 
-NagUI.graphiteWindow = function(n) {
+
+Graphite.graphiteWindow = function(n) {
     var nodelist;
     var hostnamelist = new Array();
     if (n.length > 0) {
@@ -25,7 +37,7 @@ NagUI.graphiteWindow = function(n) {
         var hostname = nodelist[i].data.name || nodelist[i].data.host_name;
         hostnamelist.push(hostname);
     }
-    var g = new NagUI.GraphitePanel({
+    var g = new Graphite.GraphitePanel({
         title: undefined
     });
     var w = new Ext.Window({
@@ -39,14 +51,18 @@ NagUI.graphiteWindow = function(n) {
     g.load(hostnamelist.join(','));
 
 }
+Ext.defint('Graphite.TemplateStore', {
+    extend: 'Ext.data.TreeStore',
+    alias: 'store.graphite'
+});
 
-Ext.define('NagUI.GraphitePanel', {
+Ext.define('Graphite.GraphitePanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.graphitepanel',
     frame: true,
     layout: 'border',
     currentGraph: {
-        metric: NagUI.config.graphite.defaultMetric,
+        metric: Graphite.config.defaultMetric,
         from: '-12hours',
         until: 'now'
     },
@@ -74,13 +90,13 @@ Ext.define('NagUI.GraphitePanel', {
         if (!this.centerRegion) {
             this.centerRegion = this.down('panel[region=center]');
         }
-        var graphUrl = NagUI.config.graphite.path + "?from=";
+        var graphUrl = Graphite.config.path + "?from=";
         var targets = this.system_fqdn.split(',');
         graphUrl += this.currentGraph.from + "&until=" + this.currentGraph.until;
         graphUrl += "&width=" + this.centerRegion.getBox().width + "&height=" + this.centerRegion.getBox().height;
         for (var l = 0; l < targets.length; l++) {
             var fqdn = targets[l].split('.');
-            graphUrl += "&target=" + NagUI.config.graphite.metricsPrefix + "." + fqdn[0] + "*." + this.currentGraph.metric;
+            graphUrl += "&target=" + Graphite.config.metricsPrefix + "." + fqdn[0] + "*." + this.currentGraph.metric;
         }
         graphUrl += "&_uniq=0.9507563426159322&hideLegend=false&title=" + this.currentGraph.metric;
         this.layout.centerRegion.update("<img src='" + graphUrl + "'>");
@@ -101,7 +117,7 @@ Ext.define('NagUI.GraphitePanel', {
         var fqdn = targets[0].split('.');
 
         this.westRegion.setRootNode({
-            id: NagUI.config.graphite.metricsPrefix + '.' + fqdn[0] + '*',
+            id: Graphite.config.metricsPrefix + '.' + fqdn[0] + '*',
             text: system_fqdn
         });
     },
@@ -185,7 +201,7 @@ Ext.define('NagUI.GraphitePanel', {
         store: new Ext.data.TreeStore({
             proxy: {
                 type: 'ajax',
-                url: NagUI.config.graphite.metricsPath + 'find/',
+                url: Graphite.config.metricsPath + 'find/',
                 extraParams: {
                     format: 'treejson',
                     contexts: 1,
