@@ -18,6 +18,7 @@ limitations under the License.
 	<title>Ops Nagios (ext4)</title>
 	<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all-debug.css" />
 	<link rel="stylesheet" type="text/css" href="nagios.css" />
+	<link rel="stylesheet" type="text/css" href="integrationlibs/GraphitePanel.css" />
 	<link rel="stylesheet" type="text/css" href="custom.css" />
 	<script type="text/javascript" src="extjs/bootstrap.js"></script>
 </head>
@@ -693,7 +694,7 @@ Ext.onReady(function(){
 		    text: 'Graphite Metrics',
 		    handler: function(i) {
 		        var node = i.parentMenu.contextNode;
-		        Graphite.graphiteWindow(node);
+		        Graphite.graphiteWindow(node,undefined,(node.data.name ? node.data.name : node.data.host_name));
 		    }
 		});
 		Ext.getCmp('nag_tree_actions').add({

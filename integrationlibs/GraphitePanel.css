@@ -1,0 +1,10 @@
+.template {
+    padding: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 13px;
+}
+.template:hover {
+    background-color: #666;
+    color: #fff;
+}
