@@ -5,7 +5,7 @@ LICENSE
 -------
 
 This software is open sourced under the Apache 2 license (see LICENSE file)
-Copyright 2010-2011 Proofpoint, Inc. All rights reserved.
+Copyright 2010-2014 Proofpoint, Inc. All rights reserved.
 
 Sencha ExtJS is distributed according to its GPLv3 license: http://www.sencha.com/license
 
@@ -26,7 +26,8 @@ The required software needed to run the NagUI is as follows:
 * Perl Modules:
   * JSON
   * Monitoring::Livestatus
-* HTTP Webserver (for the purposes of this documentation, the apache webserver has been used)			
+* HTTP Webserver (for the purposes of this documentation, the apache webserver has been used)	
+
 ### 2. Make sure Nagios is setup
 
 * Nagios: The setup and configuration of Nagios is beyond the scope of this project. For more info, go to http://www.nagios.org/
