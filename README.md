@@ -25,7 +25,7 @@ The required software needed to run the NagUI is as follows:
 
 * Perl Modules:
   * JSON
-  * Monitoring::Livestatus
+  * [Monitoring::Livestatus](https://metacpan.org/pod/Monitoring::Livestatus)
 * HTTP Webserver (for the purposes of this documentation, the apache webserver has been used)	
 
 ### 2. Make sure Nagios is setup
