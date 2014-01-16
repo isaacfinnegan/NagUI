@@ -39,7 +39,7 @@ To install the NagUI software you need to do the following:
 	you are not familiar with the apache basic auth file setup. You can read about it here: 
 		http://httpd.apache.org/docs/2.2/howto/auth.html
 
-{% codeblock lang:apacheconf %}
+```apacheconf
 <Location /nagui/>
 	AuthType basic
 	AuthBasicProvider file 
@@ -49,7 +49,7 @@ To install the NagUI software you need to do the following:
     Options +ExecCGI
 </Location>
 AddHandler cgi-script .cgi
-{% endcodeblock %}
+```
 	
 	-Writable State file
 		As of NagUI 2.1 the server requires a writable file to track state in for Saved and shared views.  The file needs to be writable by the user that executes the nagios_live.cgi, which is usually the web server user.  The locaton of this file is configured in nagui.conf using the statefile parameter.
