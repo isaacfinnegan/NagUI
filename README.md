@@ -12,7 +12,7 @@ Sencha ExtJS is distributed according to its GPLv3 license: http://www.sencha.co
 ABOUT
 -----
 
-The NagUI project started due to a need to have a more responsive and centralized view into many different nagios instances.  At the time we have to leverage several nagios server to be able to handle the load that we were creating with the large numbers (3k) of systems and service checks.   The NagUI interface provides a way to see multiple nagios server  host and service data in a single pane of glass, without requiring that the nagios servers be configured to talk or even understand each other.  Almost all the functionality of the built in nagios CGI interface has been replicated, where there are gaps, we (all of us that can use/contribute to the software) will have to add the gaps. Additionally there are use models that prompted some features that the original cgi based Nagios UI does not provide. Such as user customizable groupings of systems, and batch commands ( acknowledge, enable/disable).  
+The NagUI project started due to a need to have a more responsive and centralized view into many different nagios instances.  At the time we have to leverage several nagios server to be able to handle the load that we were creating with the large numbers (3k) of systems and service checks.   The NagUI interface provides a way to see multiple nagios server  host and service data in a single pane of glass, without requiring that the nagios servers be configured to talk or even understand each other.  Almost all the functionality of the built in nagios CGI interface has been replicated, where there are gaps, we (all of us that can use/contribute to the software) will have to add the gaps. Additionally there are use models that prompted some features that the original cgi based Nagios UI does not provide. Such as user customizable groupings of systems, and batch commands (acknowledge, enable/disable).  
 
 INSTALL
 -------
@@ -51,7 +51,7 @@ AddHandler cgi-script .cgi
 	
 * __Writable State file:__ As of NagUI 2.1 the server requires a writable file to track state in for Saved and shared views.  The file needs to be writable by the user that executes the nagios_live.cgi, which is usually the web server user.  The locaton of this file is configured in nagui.conf using the statefile parameter.
 
-* **Configure NagUI:** To configure NagUI you will need to edit the nagui.conf.   This config file defines the remove nagios livestatus instances.  You can define any number of services in this file, and it is a JSON config file.  The nagui.conf is used by the nagios_live.cgi to query the remove nagios instances and gather the data to send to the UI.  Be sure to update the nagui.conf to point to the statefile that the web user has write access to.
+* __Configure NagUI:__ To configure NagUI you will need to edit the nagui.conf.   This config file defines the remove nagios livestatus instances.  You can define any number of services in this file, and it is a JSON config file.  The nagui.conf is used by the nagios_live.cgi to query the remove nagios instances and gather the data to send to the UI.  Be sure to update the nagui.conf to point to the statefile that the web user has write access to.
 	
 ### 4. Try it out!
 
