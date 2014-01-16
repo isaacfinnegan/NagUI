@@ -19,7 +19,7 @@ INSTALL
 
 To install the NagUI software you need to do the following:
 
-1. Install prerequisite software
+** 1. Install prerequisite software **
 
 The required software needed to run the NagUI is as follows:   
 
@@ -27,12 +27,12 @@ The required software needed to run the NagUI is as follows:
   * JSON
   * Monitoring::Livestatus
 * HTTP Webserver (for the purposes of this documentation, the apache webserver has been used)			
-2. Make sure Nagios is setup
+** 2. Make sure Nagios is setup **
 
 * Nagios: The setup and configuration of Nagios is beyond the scope of this project. For more info, go to http://www.nagios.org/
 * MK Livestatus:  The NagUI uses the livestatus module for nagios to retrieve information and send commands. You can fine out more here: http://mathias-kettner.de/checkmk_livestatus.html
 	
-3. Install NagUI
+** 3. Install NagUI **
 
 * Simply untar the NagUI tarball at the document root of your web server.  NagUI relies upon external authentication similarly to how nagios does.   An example webserver config (apache) below can be simply appended to the httpd.conf. Please see your webserver documentation for how you would need to set this up for another webserver. Similarly, if you are not familiar with the apache basic auth file setup. You can read about it here: http://httpd.apache.org/docs/2.2/howto/auth.html
 
@@ -54,8 +54,7 @@ AddHandler cgi-script .cgi
 * Configure NagUI
 	To configure NagUI you will need to edit the nagui.conf.   This config file defines the remove nagios livestatus instances.  You can define any number of services in this file, and it is a JSON config file.  The nagui.conf is used by the nagios_live.cgi to query the remove nagios instances and gather the data to send to the UI.  Be sure to update the nagui.conf to point to the statefile that the web user has write access to.
 	
-
-4. Try it out!
+** 4. Try it out! **
 
 Once these steps are followed, you should be able to go to 
 	http://<yourserver>/nagui/ 
