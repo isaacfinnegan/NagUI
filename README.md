@@ -58,5 +58,5 @@ AddHandler cgi-script .cgi
 ### 4. Try it out!
 
 Once these steps are followed, you should be able to go to 
-	http://&lt;yourserver&gt;/nagui/ 
+	http://yourserver/nagui/ 
 and load up the NagUI interface.
