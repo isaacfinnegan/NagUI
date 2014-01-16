@@ -54,7 +54,7 @@ AddHandler cgi-script .cgi
 * Configure NagUI
 	To configure NagUI you will need to edit the nagui.conf.   This config file defines the remove nagios livestatus instances.  You can define any number of services in this file, and it is a JSON config file.  The nagui.conf is used by the nagios_live.cgi to query the remove nagios instances and gather the data to send to the UI.  Be sure to update the nagui.conf to point to the statefile that the web user has write access to.
 	
-** 4. Try it out! **
+### 4. Try it out!
 
 Once these steps are followed, you should be able to go to 
 	http://<yourserver>/nagui/ 
