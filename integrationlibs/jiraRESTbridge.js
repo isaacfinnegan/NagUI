@@ -1,4 +1,21 @@
 if (NagUI.config.jira.enable) {
+
+    Ext.Ajax.request({
+        url: NagUI.config.jira.jiraRESTbridge_path + 'rest/api/latest/project/' + NagUI.config.jira.project_id,
+        method: 'GET',
+        failure: function(r, o) {
+            Ext.Msg.confirm('Error', 'Unable to get Jira project info. Proceed to Jira and authorize NagUI to make requests?',
+                function(btn) {
+                    if (btn != 'cancel') {
+                        var currentLocation = window.location;
+                        window.location = currentLocation.origin + NagUI.config.jira.jiraRESTbridge_path + "rest/api/project/" + NagUI.config.jira.project_id + "?callback=" + currentLocation.href;
+                    } else {
+                        NagUI.config.jira.enable = false;
+                    }
+                });
+            return;
+        }
+    });
     function displayDate(value) {
         if (typeof value == 'number') {
             value = value * 1000;
