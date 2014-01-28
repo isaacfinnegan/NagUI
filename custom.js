@@ -29,6 +29,14 @@ NagUI.customNodes = [];
 
 
 
+// Overriding the default unhandled queries
+
+NagUI.nodeQueries.unhandledhostproblems = 'GET hosts|Columns: notes notes_url address groups next_check scheduled_downtime_depth downtimes_with_info notifications_enabled comments_with_info acknowledged last_check last_hard_state_change plugin_output name state|Filter: scheduled_downtime_depth = 0|Filter: state_type = 1|Filter: state > 0|Filter: acknowledged = 0|Filter: notifications_enabled = 1|Filter: notification_period = 24x7|Filter: notification_period = 24x7_sans_holidays|Filter: notification_period = no_weekend|Or: 3';
+NagUI.nodeQueries.unhandledsvcproblems = 'GET services|Columns: host_notes notes notes_url host_address host_groups next_check scheduled_downtime_depth downtimes_with_info notifications_enabled comments_with_info acknowledged last_check last_hard_state_change plugin_output host_name description groups state|Filter: scheduled_downtime_depth = 0|Filter: state_type = 1|Filter: state > 0|Filter: host_acknowledged = 0|Filter: acknowledged = 0|Filter: notifications_enabled = 1|Filter: notification_period = 24x7|Filter: notification_period = 24x7_sans_holidays|Filter: notification_period = no_weekend|Or: 3';
+NagUI.nodeQueries.unhandledproblems = 'GET services|Columns: host_notes notes notes_url host_address host_groups next_check scheduled_downtime_depth downtimes_with_info notifications_enabled comments_with_info acknowledged last_check last_hard_state_change plugin_output host_name description groups state|Filter: scheduled_downtime_depth = 0|Filter: state_type = 1|Filter: state > 0|Filter: host_acknowledged = 0|Filter: acknowledged = 0|Filter: notifications_enabled = 1|Filter: notification_period = 24x7|Filter: notification_period = 24x7_sans_holidays|Filter: notification_period = no_weekend|Or: 3';
+
+
+
 //  Uncomment the function below and customize to integrate with your ticketing system.  
 //  the ackTicket receives three parameters, the node(s) that is being passed to it (this could
 // be an array of nodes), the formData from the ackWindow and a call be to called after a 
@@ -38,142 +46,6 @@ NagUI.customNodes = [];
 
 // }
 
-var ticketTemplates = {
-    service: new Ext.XTemplate(
-        'Hostname: {host_name} : {host_address}, Service: {description} \n',
-        'State: {[this.stateText(values.state)]} \n',
-        'Output: {plugin_output} \n',
-        'Date/Time: {[this.asDate(values.last_hard_state_change)]} \n',
-        'Host Notes: {host_notes} \n',
-        'Notes : {notes_url} \n', {
-            asDate: displayDate,
-            stateText: displayState
-        }),
-    host: new Ext.XTemplate(
-        'Hostname: {name} : {address}\n',
-        // 'Services: ',
-        // '<tpl for="services_with_state">',
-        //  ' <span class=pp-nagios-{1}>{0}</span>  ',
-        // '</tpl><br />',
-        // 'Hostgroups: {groups}<br />',
-        'Date/Time: {[this.asDate(values.last_hard_state_change)]} \n',
-        'Notes: {notes}  {notes_url} /n',
-        'Comments: ', {
-            asDate: displayDate,
-            stateText: displayState,
-            log: NagUI.log
-        })
-};
-
-function ackTicket(n, data, callback) {
-    var nodeList = new Array();
-    var newTicket = {
-        description: "",
-        summary: "",
-        issuetype: {
-            // id: "16" //ENPE
-            id: "10" //TADNU test project
-        },
-        // status: "1",
-        project: {
-            // id: "11302"  // ENPE
-            id: "12402" // TADNU 
-        },
-        reporter: {
-            name: NagUI.username
-        }
-    };
-
-    if (n.length > 0) {
-        nodeList = n;
-        newTicket.summary = 'Batch Ack: ' + nodeList.length + ' issues: ' + data.ack_text;
-        var dt = new Date();
-        // newTicket.custom_fields.customfield_10042 = dt.format('d/M/y g:i A');
-    } else {
-        nodeList.push(n);
-        var dt = n.data.last_hard_state_change;
-        // newTicket.custom_fields.customfield_10042 = dt.format('d/M/y g:i A');
-        switch (n.data.state) {
-            case 3:
-                newTicket.summary = 'Unknown: ';
-                break;
-            case 2:
-                newTicket.summary = 'Critical: ';
-                break;
-            case 1:
-                newTicket.summary = 'Warning: ';
-                break;
-        }
-        newTicket.summary += n.data.nagios_type == 'host' ? n.data.name : n.data.host_name + ' : ' + n.data.description;
-    }
-
-    Ext.each(nodeList, function(i) {
-        if (i.state == 0) {
-            return;
-        }
-        if (newTicket.description.length > 12) {
-            newTicket.description += "\n\n";
-        }
-        newTicket.description += ticketTemplates[i.data.nagios_type].apply(i.data);;
-    });
-
-    var diag = Ext.MessageBox.show({
-        msg: data.ticket_num.match(/(XOPS|PROD)/) != null ? 'updating ticket...' : 'creating ticket...',
-        width: 250,
-        wait: true,
-        waitConfig: {
-            interval: 150
-        }
-    });
-    if (data.ticket_num.match(/(ENPE|TADNU)/) != null) {
-        var comment = {
-            body: data.ack_text + "\n\n" + newTicket.description,
-            // author: NagUI.username
-        };
-        Ext.Ajax.request({
-            url: '/jira_api/rest/api/latest/issue/' + data.ticket_num + '/comment',
-            method: 'POST',
-            // timeout: 50000,
-            jsonData: comment,
-            failure: function(r, o) {
-                Ext.MessageBox.hide();
-                Ext.Msg.alert('Error', 'Unable to update ticket');
-                return;
-            },
-            success: function(r, o) {
-                if (typeof ackTicket == 'function') {
-                    var link = 'https://evernote.jira.com/browse/' + data.ticket_num;
-                    callback(data.ticket_num, diag, {
-                        title: 'Ticket Updated',
-                        msg: data.ticket_num + '<br /><a target="_blank" href="' + link + '">' + link + '</a>'
-                    });
-                }
-            }
-        });
-    } else {
-        Ext.Ajax.request({
-            url: '/jira_api/rest/api/latest/issue',
-            method: 'POST',
-            // timeout: 5000,
-            jsonData: newTicket,
-            failure: function(r, o) {
-                Ext.MessageBox.hide();
-                Ext.Msg.alert('Error', 'Unable to create ticket');
-                return;
-            },
-            success: function(r, o) {
-                var lkup = Ext.decode(r.responseText);
-                if (typeof callback == 'function' && typeof lkup.key != 'undefined') {
-                    var link = 'https://evernote.jira.com/browse/' + lkup.key;
-                    callback(lkup.key, diag, {
-                        title: 'Ticket Created',
-                        msg: lkup.key + '<br /><a target="_blank" href="' + link + '">' + link + '</a>'
-                    });
-                }
-            }
-        });
-    }
-}
 
 // Custom function for displaying information about a host.  Example: integration with cmdb or asset system
 // function moreInfo(hostname){
