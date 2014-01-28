@@ -98,6 +98,11 @@ else {
 		}
 		Graphite.config=NagUI.config.graphite;
 	}
+	if(typeof NagUI.config.jira && NagUI.config.jira.enable)
+	{
+		console.log('loading custom extension for Jira')
+		Ext.Loader.loadScript("integrationlibs/jiraRESTbridge.js");
+	}
 
 </script>
 <script type="text/javascript" src="lib/Nagios.js"></script>
