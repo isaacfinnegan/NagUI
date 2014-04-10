@@ -13,17 +13,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
- Ext.define('NagUI.FilterItem', {
+ Ext.define('NagUI.FilterItem',
+ {
      extend: 'Ext.menu.CheckItem',
      alias: 'widget.filteritem',
      hideOnClick: true,
      checked: false,
-     handler: function(b, e) {
+     handler: function(b, e)
+     {
          var tab = Ext.getCmp('nagios_views').getActiveTab();
-         if (b.checked) {
+         if (b.checked)
+         {
              tab.store.customHostFilters.push(b.HostFilter);
              tab.store.customServiceFilters.push(b.ServiceFilter);
-         } else {
+         }
+         else
+         {
              Ext.Array.remove(tab.store.customHostFilters, b.HostFilter);
              Ext.Array.remove(tab.store.customServiceFilters, b.ServiceFilter);
          }
@@ -32,9 +37,11 @@ limitations under the License.
  });
 
 
- NagUI.nagiosServerStatusWindow = function(config) {
+ NagUI.nagiosServerStatusWindow = function(config)
+ {
      var t = new Ext.TabPanel();
-     var w = new Ext.Window({
+     var w = new Ext.Window(
+     {
          height: 600,
          title: 'Nagios Servers',
          width: 500,
@@ -43,119 +50,158 @@ limitations under the License.
      });
      w.show();
      // t.getEl().mask('Loading...');
-     Ext.Ajax.request({
+     Ext.Ajax.request(
+     {
          url: NagUI.url,
          method: 'GET',
-         params: {
+         params:
+         {
              query: 'GET services|Filter: active_checks_enabled = 1|Stats: min latency|Stats: max latency|Stats: avg latency|Stats: max execution_time|Stats: avg execution_time|Stats: min execution_time'
          },
          window: w,
-         success: function(r, o) {
+         success: function(r, o)
+         {
              var stats = Ext.decode(r.responseText);
-             Ext.each(stats, function(i) {
+             Ext.each(stats, function(i)
+             {
                  var peer = NagUI.nagiosServers.getById(i.peer_name);
-                 if (peer) {
+                 if (peer)
+                 {
                      Ext.apply(NagUI.nagiosServers.getById(i.peer_name).data, i);
                  }
              });
              t.removeAll(true);
-             NagUI.nagiosServers.each(function(i) {
+             NagUI.nagiosServers.each(function(i)
+             {
                  NagUI.log(i.data);
-                 var newc = t.add({
+                 var newc = t.add(
+                 {
                      xtype: 'panel',
                      layout: 'border',
                      title: i.get('peer_name'),
                      iconCls: (i.data.error_code ? 'x-tree-problem' : undefined),
                      items: [
-                         Ext.create('Ext.grid.property.Grid', {
+                         Ext.create('Ext.grid.property.Grid',
+                         {
                              region: 'center',
                              source: i.data,
                              nameColumnWidth: 220,
-                             listeners: {
-                                 'beforeedit': {
-                                     fn: function() {
+                             listeners:
+                             {
+                                 'beforeedit':
+                                 {
+                                     fn: function()
+                                     {
                                          return false;
                                      }
                                  }
                              },
-                             tbar: [{
+                             tbar: [
+                             {
                                  text: 'Actions',
-                                 menu: {
-                                     items: [{
+                                 menu:
+                                 {
+                                     items: [
+                                     {
                                          text: 'Enable Notifications',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'ENABLE_NOTIFICATIONS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Disable Notifications',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'DISABLE_NOTIFICATIONS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Start Executing Host Checks',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'START_EXECUTING_HOST_CHECKS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Stop Executing Host Checks',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'STOP_EXECUTING_HOST_CHECKS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Start Executing Service Checks',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'START_EXECUTING_SVC_CHECKS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Stop Executing Service Checks',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'STOP_EXECUTING_SVC_CHECKS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Start Accepting Passive Service Checks',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'START_ACCEPTING_PASSIVE_SVC_CHECKS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Stop Accepting Passive Service Checks',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'STOP_ACCEPTING_PASSIVE_SVC_CHECKS9';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Enable Event Handlers',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'ENABLE_EVENT_HANDLERS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Disable Event Handlers',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'DISABLE_EVENT_HANDLERS';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Enable Performance Data Processing',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'ENABLE_PERFORMANCE_DATA';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Disable Performance Data Processing',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'DISABLE_PERFORMANCE_DATA';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
-                                     }, {
+                                     },
+                                     {
                                          text: 'Send Restart Cmd',
-                                         handler: function() {
+                                         handler: function()
+                                         {
                                              var str = 'COMMAND [' + new Date().format('U') + '] ' + 'RESTART_PROGRAM';
                                              sendNagiosCommand(str, 'GET', t.getActiveTab().title);
                                          }
@@ -179,23 +225,28 @@ limitations under the License.
  }
 
 
- function nagiosStatus() {
-     NagUI.nagiosServers.load({
-         callback: function() {
+ function nagiosStatus()
+ {
+     NagUI.nagiosServers.load(
+     {
+         callback: function()
+         {
              var data = {
                  hosts_active: 0,
                  hosts_passive: 0,
                  services_active: 0,
                  services_passive: 0
              };
-             NagUI.nagiosServers.each(function(r) {
+             NagUI.nagiosServers.each(function(r)
+             {
                  data.hosts_active = data.hosts_active + (r.get('hosts_active') ? r.get('hosts_active') : 0);
                  data.hosts_passive = data.hosts_passive + (r.get('hosts_passive') ? r.get('hosts_passive') : 0);
                  data.services_active = data.services_active + (r.get('services_active') ? r.get('services_active') : 0);
                  data.services_passive = data.services_passive + (r.get('services_passive') ? r.get('services_passive') : 0);
              });
              var str = '';
-             if (typeof(NagUI.nagiosServers.sum('error_code') * 1) == 'number' && (NagUI.nagiosServers.sum('error_code') * 1) > 0) {
+             if (typeof(NagUI.nagiosServers.sum('error_code') * 1) == 'number' && (NagUI.nagiosServers.sum('error_code') * 1) > 0)
+             {
                  str += ' <div class=x-nagios-status-error data-qtip:"There were error(s) retrieving nagios server info"> !!! </div> ';
              }
              str += '<div>Hosts (active/passive): ' + data.hosts_active + " / " + data.hosts_passive;
@@ -209,11 +260,14 @@ limitations under the License.
 
 
 
- function getColumnsForNagiosType(nagiosType) {
-     if (nagiosType[nagiosType.length - 1] == 's') {
+ function getColumnsForNagiosType(nagiosType)
+ {
+     if (nagiosType[nagiosType.length - 1] == 's')
+     {
          nagiosType = nagiosType.slice(0, nagiosType.length - 1);
      }
-     switch (nagiosType) {
+     switch (nagiosType)
+     {
          case 'hostgroup':
              return 'name num_hosts num_services_ok num_services_warn num_services_crit num_services_unknown';
              break;
@@ -230,25 +284,30 @@ limitations under the License.
 
  }
 
- NagUI.setupLogWindow = function(c, target) {
+ NagUI.setupLogWindow = function(c, target)
+ {
      NagUI.log(c);
      var l = new NagUI.NagiosLogGrid();
-     var w = new Ext.Window({
+     var w = new Ext.Window(
+     {
          height: 500,
          width: 800,
          title: 'Logs for ' + (c['host_name'] ? c['host_name'] : '') + ' ' + (c['service_description'] ? c['service_description'] : ''),
          layout: 'fit',
          items: l
      });
-     w.show(target, function() {
+     w.show(target, function()
+     {
          l.getLogs(c);
      });
      return l;
  }
 
 
- function nagiosSearch(term, opts) {
-     if (!term || typeof term == 'object') {
+ function nagiosSearch(term, opts)
+ {
+     if (!term || typeof term == 'object')
+     {
          term = Ext.getCmp('search_input').getValue();
      }
      var searchPanel = Ext.getCmp('nagios_search');
@@ -267,49 +326,65 @@ limitations under the License.
          nodetext: (type == 'service' ? 'hostsvc' : 'name'),
          query: 'search'
      };
-     if (type == 'hostgroup') {
+     if (type == 'hostgroup')
+     {
          NagUI.nodeQueries.search = 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: name ~~ ' + term;
      }
-     if (type == 'servicegroup') {
+     if (type == 'servicegroup')
+     {
          NagUI.nodeQueries.search = 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: name ~~ ' + term;
      }
-     if (type == 'host') {
+     if (type == 'host')
+     {
          NagUI.nodeQueries.search = 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: name ~~ ' + term + '|Filter: address ~~ ' + term + '|Filter: alias ~~ ' + term + '|Filter: notes ~~ ' + term + '|Or: 4';
      }
-     if (type == 'service') {
+     if (type == 'service')
+     {
          NagUI.nodeQueries.search = 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: host_name ~~ ' + term + '|Filter: host_address ~~ ' + term + '|Filter: host_alias ~~ ' + term + '|Filter: description ~~ ' + term + '|Filter: plugin_output ~~ ' + term + '|Filter: host_notes ~~ ' + term + '|Or: 6';
      }
      search.expand();
      Ext.getCmp('search_permalink').getEl().dom.href = '?' + type + '_query=' + term;
  }
 
- function toggleAutoRefresh(i, tree) {
+ function toggleAutoRefresh(i, tree)
+ {
      var menu = i.ownerCt;
-     if (!i.checked) {
+     if (!i.checked)
+     {
          tree.autoRefresh = 0;
-         if (typeof tree.refreshTask != 'undefined') {
+         if (typeof tree.refreshTask != 'undefined')
+         {
              Ext.TaskManager.stop(tree.refreshTask);
          }
          delete tree.refreshTask;
-     } else {
-         if (typeof tree.refreshTask != 'undefined') {
+     }
+     else
+     {
+         if (typeof tree.refreshTask != 'undefined')
+         {
              Ext.TaskManager.stop(tree.refreshTask);
          }
          tree.autoRefresh = i.time;
          tree.refreshTask = {
-             run: function() {
+             run: function()
+             {
                  tree.refresh();
              },
              interval: i.time * 1000
          };
          Ext.TaskManager.start(tree.refreshTask);
-         menu.items.each(function(k) {
-             if (typeof k.setChecked == 'undefined') {
+         menu.items.each(function(k)
+         {
+             if (typeof k.setChecked == 'undefined')
+             {
                  return;
              }
-             if (k.time == i.time) {
+             if (k.time == i.time)
+             {
                  return;
-             } else {
+             }
+             else
+             {
                  k.setChecked(false);
              }
          });
@@ -317,29 +392,37 @@ limitations under the License.
  }
 
 
- function nagiosTextRender(value, o, r, row, col, store) {
-     if (typeof r.state == 'undefined') {
+ function nagiosTextRender(value, o, r, row, col, store)
+ {
+     if (typeof r.state == 'undefined')
+     {
          return value;
-     } else {
+     }
+     else
+     {
 
      }
  }
 
- function nagiosBoolRender(value) {
-     if (value == '0' || value == 0) {
+ function nagiosBoolRender(value)
+ {
+     if (value == '0' || value == 0)
+     {
          return 'Off';
      }
      return 'On';
  }
 
- function nagiosStateRender(value) {
+ function nagiosStateRender(value)
+ {
      if (value == '0') return '<span class=statusOK>OK</span>';
      if (value == '1') return '<span class=statusWarning>Warning</span>';
      if (value == '2') return '<span class=statusCritical>Critical</span>';
      if (value == '3') return '<span class=statusUnknown>Unknown</span>';
  }
 
- function setNagiosInfo(node, target) {
+ function setNagiosInfo(node, target)
+ {
      //Ext.getCmp('nagiosdetail').getEl().update('');
      target.setLoading(true);
      var filter_keys = {
@@ -353,11 +436,13 @@ limitations under the License.
      query += node.data.nagios_type == 'service' ? '|Filter: host_name = ' + node.data.host_name : '';
      query += node.data.nagios_type == 'hostgroup' ? '|Filter: name = ' + node.data.name : '';
 
-     Ext.Ajax.request({
+     Ext.Ajax.request(
+     {
          url: NagUI.url,
          method: 'GET',
          nagios_type: node.data.nagios_type,
-         params: {
+         params:
+         {
              query: query,
              mode: 'treeloader',
              method: 'GET',
@@ -365,8 +450,10 @@ limitations under the License.
              status: node.data.nagios_type + 's',
              peer_name: (node.data.nagios_type == 'host' || node.data.nagios_type == 'service' ? node.data.peer_name : '')
          },
-         success: function(r, o) {
-             if (r.responseText) {
+         success: function(r, o)
+         {
+             if (r.responseText)
+             {
                  var d = Ext.decode(r.responseText);
                  var info = nagiosTemplates[o.nagios_type].apply(d[0]);
                  target.update(replaceURLWithHTMLLinks(info));
@@ -378,16 +465,19 @@ limitations under the License.
              }
              target.setLoading(false);
          },
-         failure: function(r, o) {
+         failure: function(r, o)
+         {
              target.setLoading(false);
          }
      });
  }
 
 
- function addCustomView(name, config) {
+ function addCustomView(name, config)
+ {
      var views = Ext.getCmp('nagios_views');
-     if (typeof name != 'string') {
+     if (typeof name != 'string')
+     {
          name = 'View ' + views.items.getCount();
      }
 
@@ -398,43 +488,53 @@ limitations under the License.
          allowDrop: true,
          rootVisible: true,
          closable: true,
-         listeners: {
+         listeners:
+         {
              'itemcontextmenu': doNodeContextMenu,
-             'itemclick': updateNagiosInfoPanel,
+             'itemclick': nagiosNodeClick,
          },
          // stateful:true,
          // statefulNodes:true,
-         viewConfig: {
+         viewConfig:
+         {
              animate: false,
              allowCopy: true,
              loadMask: false,
-             plugins: {
+             plugins:
+             {
                  ptype: 'treeviewdragdrop',
                  allowContainerDrops: true,
                  ddGroup: 'nagiosDD',
                  enableDrop: true,
-                 onContainerDrop: function(source, e, data) {
+                 onContainerDrop: function(source, e, data)
+                 {
                      data.copy = true;
                      var node = dropTree.store.root.appendChild(data.node);
-                     if (node) {
+                     if (node)
+                     {
                          node.data.allowDrop = false;
                      }
                      return true;
                  },
-                 onContainerOver: function(dd, e, data) {
+                 onContainerOver: function(dd, e, data)
+                 {
                      data.copy = true;
                      return e.getTarget('.' + this.indicatorCls) ? this.currentCls : this.dropAllowed;
                  }
              },
-             listeners: {
-                 beforedrop: function(de, data) {
+             listeners:
+             {
+                 beforedrop: function(de, data)
+                 {
                      data.copy = true;
                  }
              }
 
          },
-         store: new NagUI.NagiosStore({
-             root: {
+         store: new NagUI.NagiosStore(
+         {
+             root:
+             {
                  loaded: true,
                  expanded: true,
                  text: 'Custom View',
@@ -444,7 +544,8 @@ limitations under the License.
              customServiceFilters: ['Filter: host_name !~ dummy-host-all-services']
          })
      };
-     if (config) {
+     if (config)
+     {
          Ext.apply(newNagiosTreeConfig, config);
      }
      var newcustomview = views.add(new NagUI.NagiosTree(newNagiosTreeConfig));
@@ -454,13 +555,33 @@ limitations under the License.
      return newcustomview;
  }
 
- function replaceURLWithHTMLLinks(text) {
+ function replaceURLWithHTMLLinks(text)
+ {
      var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;\*]*[-A-Z0-9+&@#\/%=~_|])/ig;
      return text.replace(exp, "<a target=_new href='$1'>$1</a>");
  }
 
- function updateNagiosInfoPanel(view, node) {
-     if (node.data.nagios_type == 'comment' || node.data.nagios_type == 'downtime') {
+ function nagiosNodeClick(view, node)
+ {
+     if (typeof NagUI.nodeHandlers[node.data.text] == 'function')
+     {
+         NagUI.nodeHandlers[node.data.text].call(this, view, node);
+     }
+     else
+     {
+         updateNagiosInfoPanel(view, node);
+     }
+ }
+
+ function updateNagiosInfoPanel(view, node)
+ {
+     if (node.data.nagios_type == 'comment')
+     {
+
+     }
+
+     if (node.data.nagios_type == 'downtime')
+     {
          return;
      }
      var nagiosdetail = Ext.getCmp('nagiosdetail');
@@ -473,19 +594,24 @@ limitations under the License.
 
  // there are 2 ajax calls here one for the shared views and one for the user views. the user view
  // is chained to the shared view ajax call
- function restoreCustomViews(callback) {
+ function restoreCustomViews(callback)
+ {
 
      var savedViews = Ext.getCmp('saved_views');
      savedViews.suspendEvents();
      //step 1: get shared views and restore
-     Ext.Ajax.request({
+     Ext.Ajax.request(
+     {
          url: NagUI.url + '?state=shared',
          method: 'GET',
-         success: function(r, o) {
+         success: function(r, o)
+         {
              var views = (r.responseText.length > 1 ? Ext.decode(r.responseText) : []);
              savedViews.getRootNode().childNodes[0].removeAll();
-             Ext.each(views, function(i) {
-                 savedViews.getRootNode().childNodes[0].appendChild({
+             Ext.each(views, function(i)
+             {
+                 savedViews.getRootNode().childNodes[0].appendChild(
+                 {
                      text: i.text,
                      viewstate: i.viewstate,
                      leaf: true
@@ -493,14 +619,18 @@ limitations under the License.
              });
 
              // step 2: get user saved views and restore
-             Ext.Ajax.request({
+             Ext.Ajax.request(
+             {
                  url: NagUI.url + '?state=' + NagUI.username,
                  method: 'GET',
-                 success: function(r, o) {
+                 success: function(r, o)
+                 {
                      var views = (r.responseText.length > 1 ? Ext.decode(r.responseText) : []);
                      savedViews.getRootNode().childNodes[1].removeAll();
-                     Ext.each(views, function(i) {
-                         savedViews.getRootNode().childNodes[1].appendChild({
+                     Ext.each(views, function(i)
+                     {
+                         savedViews.getRootNode().childNodes[1].appendChild(
+                         {
                              text: i.text,
                              viewstate: i.viewstate,
                              leaf: true
@@ -509,24 +639,28 @@ limitations under the License.
 
                      // if there's a callback: restoring nagios_views that need
                      // to reference these shared views
-                     if (typeof callback == 'function') {
+                     if (typeof callback == 'function')
+                     {
                          callback();
                      }
                      savedViews.resumeEvents();
                  },
-                 failure: function(r, o) {
+                 failure: function(r, o)
+                 {
                      Ext.notify.msg('Error', 'There was an error restoring the user saved views');
                  }
              });
          },
-         failure: function(r, o) {
+         failure: function(r, o)
+         {
              Ext.notify.msg('Error', 'There was an error restoring the shared saved views');
          }
      });
      Ext.defer(restoreCustomViews, 15000);
  }
 
- function saveCustomView(view) {
+ function saveCustomView(view)
+ {
      var savedViews = Ext.getCmp('saved_views');
      var newChild = {
          text: view.getStateId(),
@@ -535,31 +669,40 @@ limitations under the License.
          viewstate: view.getState(),
          leaf: true
      };
-     if (savedViews.getRootNode().childNodes[1].findChild('text', view.getStateId())) {
+     if (savedViews.getRootNode().childNodes[1].findChild('text', view.getStateId()))
+     {
          savedViews.getRootNode().childNodes[1].replaceChild(newChild, savedViews.getRootNode().childNodes[1].findChild('text', view.getStateId()));
-     } else {
+     }
+     else
+     {
          savedViews.getRootNode().childNodes[1].appendChild(newChild);
      }
  }
 
 
- Ext.notify = function() {
+ Ext.notify = function()
+ {
      var msgCt;
 
-     function createBox(t, s) {
+     function createBox(t, s)
+     {
          return '<div class="msg"><h3>' + t + '</h3><p>' + s + '</p></div>';
      }
      return {
-         msg: function(title, format) {
-             if (!msgCt) {
-                 msgCt = Ext.core.DomHelper.insertFirst(document.body, {
+         msg: function(title, format)
+         {
+             if (!msgCt)
+             {
+                 msgCt = Ext.core.DomHelper.insertFirst(document.body,
+                 {
                      id: 'msg-div'
                  }, true);
              }
              var s = Ext.String.format.apply(String, Array.prototype.slice.call(arguments, 1));
              var m = Ext.core.DomHelper.append(msgCt, createBox(title, s), true);
              m.hide();
-             m.slideIn('t').ghost("t", {
+             m.slideIn('t').ghost("t",
+             {
                  delay: 1000,
                  remove: true
              });

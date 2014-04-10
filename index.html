@@ -104,6 +104,10 @@ else {
 		Ext.Loader.loadScript("integrationlibs/jiraRESTbridge.js");
 	}
 
+// make the nodehandlers var
+NagUI.nodeHandlers={};
+
+
 </script>
 <script type="text/javascript" src="lib/Nagios.js"></script>
 <script type="text/javascript" src="nagiosnew.js"></script>
@@ -114,6 +118,8 @@ else {
 <script type="text/javascript" src="lib/SavedViews.js"></script>
 <script type="text/javascript" src="lib/NagiosActions.js"></script>
 <script type="text/javascript" src="lib/NagiosLogGrid.js"></script>
+<script type="text/javascript" src="lib/Comments.js"></script>
+<script type="text/javascript" src="lib/Downtimes.js"></script>
 <script type="text/javascript" src="lib/Livelog.js"></script>
 <script type="text/javascript" src="custom.js"></script>
 <script>
@@ -193,7 +199,7 @@ Ext.onReady(function(){
 		listeners:{
 			'itemcontextmenu' : doNodeContextMenu,
 			'itemclick': {
-				fn: updateNagiosInfoPanel
+				fn: nagiosNodeClick
 			}
 		},
 		defaultVisibleColumns:['text','status'],
@@ -481,7 +487,7 @@ Ext.onReady(function(){
 							defaultVisibleColumns:['text','status','notes','comments_with_info'],
 							listeners:{
 								'itemcontextmenu' : doNodeContextMenu,
-								'itemclick': updateNagiosInfoPanel
+								'itemclick': nagiosNodeClick
 							},
 							viewConfig: {
 								loadMask: false,
@@ -594,6 +600,8 @@ Ext.onReady(function(){
 			text:'Comments',
 			meta: 1,
 			expanded:false,
+			leaf: true,
+			checked: 'nocheck',
 			iconCls:'x-tree-comment',
 			parms:{
 				groupby:'',
@@ -606,6 +614,8 @@ Ext.onReady(function(){
 			text:'Downtimes',
 			meta: 1,
 			expanded:false,
+			leaf: true,
+			checked: 'nocheck',
 			iconCls:'x-tree-downtime',
 			parms:{
 				groupby:'',
@@ -615,6 +625,176 @@ Ext.onReady(function(){
 			}
 		}
 	]);
+
+// Add custom handlers for comments and Downtimes
+	NagUI.nodeHandlers.Comments=function(view,node) {
+		var newview=addCustomView('Comments',
+		{
+			rootVisible: false,
+			listeners: {
+				'itemclick': {
+					fn: function(view,node) {
+						var newnode={data:{}};
+						if(node.get('is_service'))
+						{
+							newnode.data={
+								host_name: node.data.host_name,
+								description: node.data.service_description,
+								nagios_type: 'service',
+								text: node.data.text
+							};
+						}
+						else
+						{
+							newnode.data={
+								name: node.data.host_name,
+								nagios_type: 'host',
+								text: node.data.text
+							};
+						}
+						nagiosNodeClick(view,newnode);
+					}
+				}
+			},
+		    defaultVisibleColumns: ['host', 'author', 'comment', 'service_description'],
+		    columns: [
+		            {
+        	            xtype: 'treecolumn',
+			            text: 'Host',
+			            dataIndex: 'host_name',
+			            flex: 2
+			        },
+			        {
+			            text: 'Service',
+			            dataIndex: 'service_description',
+			            flex: 2
+			        },
+			        {
+			            text: 'Author',
+			            dataIndex: 'author',
+			            flex: 2
+			        },
+			        {
+			            text: 'Comment',
+			            dataIndex: 'comment',
+			            flex: 2
+			        },
+			        {
+			            text: 'Time',
+			            dataIndex: 'entry_time',
+			            flex: 2
+			        },
+
+		    ],
+		    store: new NagUI.CommentStore(
+		    {
+
+		        root:
+		        {
+		            text: 'Comments',
+        			iconCls:'x-tree-comment',
+		            meta: 1,
+		            parms:
+		            {
+		                groupby: '',
+		                nodetext: 'author',
+		                status: 'comment',
+		                query: 'comments'
+		            }
+		        }
+		    })
+		});
+		newview.getRootNode().expand();
+	}
+	NagUI.nodeHandlers.Downtimes=function(view,node) {
+		var newview=addCustomView('Downtimes',
+		{
+			rootVisible: false,
+			listeners: {
+				'itemclick': {
+					fn: function(view,node) {
+						var newnode={data:{}};
+						if(node.get('is_service'))
+						{
+							newnode.data={
+								host_name: node.data.host_name,
+								description: node.data.service_description,
+								nagios_type: 'service',
+								text: node.data.text
+							};
+						}
+						else
+						{
+							newnode.data={
+								name: node.data.host_name,
+								nagios_type: 'host',
+								text: node.data.text
+							};
+						}
+						nagiosNodeClick(view,newnode);
+					}
+				}
+			},
+		    defaultVisibleColumns: ['host', 'author', 'comment', 'service_description'],
+		    columns: [
+		            {
+        	            xtype: 'treecolumn',
+			            text: 'Host',
+			            dataIndex: 'host_name',
+			            flex: 2
+			        },
+			        {
+			            text: 'Service',
+			            dataIndex: 'service_description',
+			            flex: 2
+			        },
+			        {
+			            text: 'Author',
+			            dataIndex: 'author',
+			            flex: 2
+			        },
+			        {
+			            text: 'Comment',
+			            dataIndex: 'comment',
+			            flex: 2
+			        },
+			        {
+			            text: 'Start Time',
+			            dataIndex: 'start_time',
+			            flex: 2
+			        },
+			        {
+			            text: 'End Time',
+			            dataIndex: 'end_time',
+			            flex: 2
+			        },			        
+			        {
+			            text: 'Duratino',
+			            dataIndex: 'duration',
+			            flex: 2
+			        }
+
+		    ],
+		    store: new NagUI.DowntimeStore(
+		    {
+
+		        root:
+		        {
+		            text: 'Downtimes',
+        			iconCls:'x-tree-comment',
+		            meta: 1,
+		            parms:
+		            {
+		                groupby: '',
+		                nodetext: 'author',
+		                status: 'comment',
+		                query: 'donwtimes'
+		            }
+		        }
+		    })
+		});
+		newview.getRootNode().expand();
+	}
 		
 	if(NagUI.customNodes.length)
 	{
