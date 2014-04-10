@@ -458,10 +458,23 @@ limitations under the License.
                  var info = nagiosTemplates[o.nagios_type].apply(d[0]);
                  target.update(replaceURLWithHTMLLinks(info));
                  var detail = Ext.getCmp('nagiosdetaildata');
-                 detail.setSource(d[0]);
-                 detail.store.sort();
-                 // detail.invalidateScroller();
 
+                 Ext.Ajax.request(
+                 {
+                     url: NagUI.url,
+                     method: 'GET',
+                     params:
+                     {
+                         query: "GET commands|Filter: name = " + d[0].check_command
+                     },
+                     success: function(r, o)
+                     {
+                         var command_info = Ext.decode(r.responseText);
+                         d[0].check_command_line = command_info[0].line;
+                         detail.setSource(d[0]);
+                         detail.store.sort();
+                     }
+                 });
              }
              target.setLoading(false);
          },
