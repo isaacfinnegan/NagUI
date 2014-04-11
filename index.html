@@ -386,14 +386,17 @@ Ext.onReady(function(){
 							{
 								title: 'Properties',
 								xtype: 'propertygrid',
+								viewConfig: {
+									enableTextSelection: true
+								},
 								region:'east',
 								collapsed:true,
 								collapsible:true,
 								titleCollapse:true,
+								headerPosition: 'left',
 								// collapseMode: 'header',
-								hideCollapseTool:true,
-								preventHeader:true,
-								hideHeaders:true,
+								// hideCollapseTool:true,
+								resizable: true,
 								source:{},
 								width:500,
 								split:false,
@@ -406,12 +409,12 @@ Ext.onReady(function(){
 											return false;
 										}
 									},
-									'mouseleave':{
-										element: 'el',
-										fn: function(){
-											Ext.getCmp('nagiosdetaildata').collapse();
-										}
-									}
+									// 'mouseleave':{
+									// 	element: 'el',
+									// 	fn: function(){
+									// 		Ext.getCmp('nagiosdetaildata').collapse();
+									// 	}
+									// }
 								}							
 							}
 						]
