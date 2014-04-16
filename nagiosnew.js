@@ -252,8 +252,11 @@ limitations under the License.
              str += '<div>Hosts (active/passive): ' + data.hosts_active + " / " + data.hosts_passive;
              str += '<br/>Services (active/passive): ' + data.services_active + ' / ' + data.services_passive + '</div>';
              Ext.getCmp('statusbox').getEl().update(str);
-             //Ext.getCmp('statusboxbutton').setText(str);			
-             Ext.defer(nagiosStatus, 20000);
+             //Ext.getCmp('statusboxbutton').setText(str);
+             if (!NagUI.devpause)
+             {
+                 Ext.defer(nagiosStatus, 20000);
+             }
          }
      });
  }
@@ -574,6 +577,19 @@ limitations under the License.
      return text.replace(exp, "<a target=_new href='$1'>$1</a>");
  }
 
+ function getNagiosNode(node)
+ {
+     if (node.data.nagios_type == 'comment')
+     {
+         return commentToNode(node);
+     }
+     if (node.data.nagios_type == 'downtime')
+     {
+         return downtimeToNode(node);
+     }
+     return node;
+ }
+
  function nagiosNodeClick(view, node)
  {
      if (typeof NagUI.nodeHandlers[node.data.text] == 'function')
@@ -582,7 +598,7 @@ limitations under the License.
      }
      else
      {
-         updateNagiosInfoPanel(view, node);
+         updateNagiosInfoPanel(view, getNagiosNode(node));
      }
  }
 
@@ -669,7 +685,10 @@ limitations under the License.
              Ext.notify.msg('Error', 'There was an error restoring the shared saved views');
          }
      });
-     Ext.defer(restoreCustomViews, 15000);
+     if (!NagUI.devpause)
+     {
+         Ext.defer(restoreCustomViews, 15000);
+     }
  }
 
  function saveCustomView(view)
