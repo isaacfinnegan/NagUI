@@ -65,23 +65,19 @@ if (NagUI.config.jira.enable)
             return 'Unknown';
         }
     }
-    var noformat = '{noformat}';
     var ticketTemplates = {
         service: new Ext.XTemplate(
-            '\{noformat\}',
             'Hostname: {host_name} : {host_address}, Service: {description} \n',
             'State: {[this.stateText(values.state)]} \n',
             'Output: {plugin_output} \n',
             'Date/Time: {[this.asDate(values.last_hard_state_change)]} \n',
             'Host Notes: {host_notes} \n',
             'Notes : {notes_url} \n',
-            '\{noformat\}',
             {
                 asDate: displayDate,
                 stateText: displayState
             }),
         host: new Ext.XTemplate(
-            '\{noformat\}',
             'Hostname: {name} : {address}\n',
             // 'Services: ',
             // '<tpl for="services_with_state">',
@@ -91,7 +87,6 @@ if (NagUI.config.jira.enable)
             'Date/Time: {[this.asDate(values.last_hard_state_change)]} \n',
             'Notes: {notes}  {notes_url} /n',
             'Comments: ',
-            '\{noformat\}',
             {
                 asDate: displayDate,
                 stateText: displayState,
@@ -158,6 +153,8 @@ if (NagUI.config.jira.enable)
             {
                 newTicket.description += "\n\n";
             }
+            // noformat tag has to be added here, since the jira tag syntax
+            // overlaps with the template syntax
             newTicket.description += '{noformat}' + ticketTemplates[i.data.nagios_type].apply(i.data) + '{noformat}';
         });
 
