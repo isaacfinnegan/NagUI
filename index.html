@@ -122,6 +122,15 @@ NagUI.nodeHandlers={};
 <script type="text/javascript" src="lib/Downtimes.js"></script>
 <script type="text/javascript" src="lib/Livelog.js"></script>
 <script type="text/javascript" src="custom.js"></script>
+
+<script type="text/javascript" src="/timeserieswidget/jquery.min.js"></script>
+<script type="text/javascript" src="/timeserieswidget/jquery.tswidget.js"></script>
+<script type="text/javascript" src="/timeserieswidget/graphite_helpers.js"></script>
+<script type="text/javascript" src="/timeserieswidget/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/timeserieswidget/examples/graph-highcharts.js"></script>
+
+<script type="text/javascript" src="integrationlibs/TimeSeriesPanel.js"></script>
+
 <script>
 
 // Load the user info syncronously
@@ -713,7 +722,7 @@ Ext.onReady(function(){
 		    text: 'Graphite Metrics',
 		    handler: function(i) {
 		        var node = i.parentMenu.contextNode;
-		        Graphite.graphiteWindow(node,undefined,(node.data.name ? node.data.name : node.data.host_name));
+		        Graphite.timeseriesWindow(node,undefined,(node.data.name ? node.data.name : node.data.host_name));
 		    }
 		});
 		Ext.getCmp('nag_tree_actions').add({
@@ -723,7 +732,7 @@ Ext.onReady(function(){
 				var nodes=nag_tree.getChecked();
 				if(nodes.length>0)
 				{
-					Graphite.graphiteWindow(nodes);
+					Graphite.timeseriesWindow(nodes);
 				}
 		    }
 		});
@@ -734,7 +743,7 @@ Ext.onReady(function(){
                 var nodes = Ext.getCmp('nagios_views').getActiveTab().getChecked();
 				if(nodes.length>0)
 				{
-					Graphite.graphiteWindow(nodes);
+					Graphite.timeseriesWindow(nodes);
 				}
 		    }
 		});	}
