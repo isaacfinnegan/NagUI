@@ -15,12 +15,13 @@ limitations under the License.
 <html>
 <head>
 	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-	<title>Ops Nagios (ext4)</title>
-	<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all-debug.css" />
+	<title>Ops Nagios (ext5)</title>
+	<link rel="stylesheet" type="text/css" href="/extjs5/build/packages/ext-theme-classic/build/resources/ext-theme-classic-all.css" />
 	<link rel="stylesheet" type="text/css" href="nagios.css" />
 	<link rel="stylesheet" type="text/css" href="integrationlibs/GraphitePanel.css" />
 	<link rel="stylesheet" type="text/css" href="custom.css" />
-	<script type="text/javascript" src="extjs/bootstrap.js"></script>
+	<script type="text/javascript" src="/extjs5/build/bootstrap.js"></script>
+	<script type="text/javascript" src="/extjs5/build/packages/ext-theme-classic/build/ext-theme-classic.js"></script>
 </head>
 <body>
 <div id="loading" class="pageloading" style=""> 
@@ -29,7 +30,7 @@ limitations under the License.
 <script type="text/javascript" src="lib/ExtFixes.js"></script>
 
 <script>
-Ext.Loader.setPath('Ext.ux','ux');
+// Ext.Loader.setPath('Ext.ux','ux');
 Ext.require([
     'Ext.data.*',
     'Ext.grid.*',
@@ -37,7 +38,7 @@ Ext.require([
     'Ext.state.*',
 	'Ext.Action',
 	'Ext.util.Filter',
-	'Ext.ux.grid.FiltersFeature'
+	// 'Ext.ux.grid.FiltersFeature'
 
 ]);
 // too many items save state otherwise
@@ -706,7 +707,7 @@ Ext.onReady(function(){
 	});
 	// Post app setup, do things that need all the components done.
 	
-	if(NagUI.config.graphite && Graphite.config.enable)
+	if(NagUI.config.graphite.enable && Graphite.config.enable)
 	{
 		NodeContextMenu.add({
 		    xtype: 'menuitem',
